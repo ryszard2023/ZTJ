@@ -1,0 +1,130 @@
+import random
+import time
+
+def new_board(): 
+    board = ["1","2","3", "4","5","6", "7","8","9"]
+    return board 
+
+def disp_board(board, space=0):
+    print(board[0] + " | " + board[1] + " | " + board[2])
+    print('-' * 10)
+    print(board[3] + " | " + board[4] + " | " + board[5])
+    print('-' * 10)
+    print(board[6] + " | " + board[7] + " | " + board[8])
+    print('\n' * space)
+ 
+def get_game_settings():
+    mark1, mark2, computer = "-", "-", -1
+
+    while True:
+        print()
+        mark1 = input('Gracz 1: wpisz X lub O - koniec w dowolnej chwili: CTRL-C: ').upper()
+        mark2 = 'O' if mark1 == 'X' else 'X'
+
+        pc = input('Wybierz 1 lub 2, jezeli ten gracz jest komputerm:')
+        pc = pc if pc in ['1', '2'] else '0'
+        pc_text = "Komputer: " + ("nie gra" if pc =='0' else "jako Gracz1" if pc =='1' else "jako Gracz2")
+        print(f'Gracz1: {mark1},  Gracz2: {mark2},  {pc_text}')
+
+        if mark1 in ['O', 'X'] and mark2 in ['O', 'X'] and pc in ['0', '1', '2']:
+            print('')
+            break
+
+        print('\n!!! Można wybrać dla graczy X lub O oraz 1 lub 2 dla komputera - popraw')
+   
+    return mark1, mark2, pc
+
+def set_player(player, mark1, mark2):
+    # przełącza uzytkownika i wylicza jego ustawienia
+    player = 1 if (player == 2 or player == 0) else 2
+    mark = mark1 if player == 1 else mark2
+    message = f'Gracz{player}: wybierz komórke na planszy '
+    
+    return player, mark, message
+    
+def get_position(board, player, message, computer):
+    result = 0
+    if computer == "0" or ((computer == '1' and player ==2) or (computer == '2' and player ==1)):
+        while True:
+            result = input(message)
+            if result not in ["1","2","3", "4","5","6", "7","8","9"]:
+                print('Nr komórki musi być liczbą: 1 .. 9')
+            elif board[int(result)-1] in ['X', 'O']:
+                print('Komórka zajęta - wybierz inną')
+            else:
+                result = int(result)
+                break
+    elif (computer == '1' and player ==1) or (computer == '2' and player ==2):
+        i = 0
+        while True:
+            result = random.randint(1, 9)
+            time.sleep(1) 
+            if board[result-1] in ['X', 'O']:
+                i =+ 1
+                if i > 1000:
+                    print('Gracz Komputer zwariował - proszę przerwać program CTRL-C')
+            else:
+                break
+        print(f'Komputer-Gracz{player} wybrał komórkę: {result} / {i}')
+
+    return result
+
+def iswinner(board, player, computer):
+    r1 = board[0] == board[1] == board[2]
+    r2 = board[3] == board[4] == board[5]
+    r3 = board[6] == board[7] == board[8]
+
+    c1 = board[0] == board[3] == board[6]
+    c2 = board[1] == board[4] == board[7]
+    c3 = board[2] == board[5] == board[8]
+
+    d1 = board[0] == board[4] == board[8]
+    d2 = board[2] == board[4] == board[6]
+
+    if r1 or r2 or r3 or c1 or c2 or c3 or d1 or d2:
+        print(f'WYGRAŁ:  Gracz{player}{"-Komputer" if (computer == "1" and player ==1) or (computer == "2" and player ==2) else ""}')
+        return True
+    else:
+        return False
+
+def isend(board, is_win):
+    result = False
+    filled_board = all([el in ['X', 'O'] for el in board])
+    if not is_win and filled_board:
+        print(f'KONIEC gry: REMIS')
+        result = True
+    elif not is_win and not filled_board:
+        result = False
+    elif is_win:
+        print(f'KONIEC gry')
+        result = True
+    
+    return result
+
+while True:
+    mark1, mark2, computer = get_game_settings()
+
+    board = new_board()
+    disp_board(board, 1)
+    
+    player = 0  # init; ustawia 1 lub 2 i wskazuje na aktualnie aktywnego pracza
+    while True:
+        player, mark, message = set_player(player, mark1, mark2)
+        position = get_position(board, player, message, computer)
+        
+        if position == 0:    # gracz wpisuje 0, aby rozpocząć nową grę 
+            print(f'KONIEC gry: REMIS')
+            break
+        else:    
+            board[position - 1] = mark
+            disp_board(board)
+            is_winner = iswinner(board, player, computer)
+            is_end = isend(board, is_winner)
+
+        # if is_end(board, is_winner(board, mark)):
+        if is_end:
+            break
+
+
+
+
