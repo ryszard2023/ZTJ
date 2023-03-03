@@ -1,3 +1,4 @@
+import numpy as np
 import random
 import time
 
@@ -65,28 +66,25 @@ def get_position(board, player, message, computer):
                     print('Gracz Komputer zwariował - proszę przerwać program CTRL-C')
             else:
                 break
-        print(f'Komputer-Gracz{player} wybrał komórkę: {result} / {i}')
+        print(f'Gracz{player}-Komputer wybrał komórkę: {result} / {i}')
 
     return result
 
-def iswinner(board, player, computer):
-    r1 = board[0] == board[1] == board[2]
-    r2 = board[3] == board[4] == board[5]
-    r3 = board[6] == board[7] == board[8]
+def iswinner(board, player, computer, mark):
+    np_board = np.reshape(board, (3, 3))
 
-    c1 = board[0] == board[3] == board[6]
-    c2 = board[1] == board[4] == board[7]
-    c3 = board[2] == board[5] == board[8]
+    rows = np.any([np.all(np_board[i,:]==mark) for i in range(np_board.shape[0])])
+    columns = np.any([np.all(np_board[:,i]==mark) for i in range(np_board.shape[1])])
 
-    d1 = board[0] == board[4] == board[8]
-    d2 = board[2] == board[4] == board[6]
+    diag1 = np.all([np.diagonal(np_board)==mark])
+    diag2 = np.all([np.fliplr(np_board).diagonal()==mark])
 
-    if r1 or r2 or r3 or c1 or c2 or c3 or d1 or d2:
+    if rows or columns or diag1 or diag2:
         print(f'WYGRAŁ:  Gracz{player}{"-Komputer" if (computer == "1" and player ==1) or (computer == "2" and player ==2) else ""}')
         return True
     else:
         return False
-
+    
 def isend(board, is_win):
     result = False
     filled_board = all([el in ['X', 'O'] for el in board])
@@ -118,7 +116,7 @@ while True:
         else:    
             board[position - 1] = mark
             disp_board(board)
-            is_winner = iswinner(board, player, computer)
+            is_winner = iswinner(board, player, computer, mark)
             is_end = isend(board, is_winner)
 
         if is_end:

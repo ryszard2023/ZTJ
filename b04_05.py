@@ -41,8 +41,8 @@ starship = "Enterprise"
 print(starship.startswith("En"))
 print(starship.endswith("risE"))
 
-# user_input = input('Wybierz opcję (1..5)')
-# print("Wybrałeś:", user_input)
+# user_input = input('Wybierz opcję (1..5) ')
+# print("Wybrałeś: ", user_input)
 # print(type(user_input))
 
 print("'12' * 3 to:", '12' * 3)
@@ -51,3 +51,4 @@ print(int(12), float(12.1), '//', str(10 - 5), type(str(10 - 5)))
 
 print(str(print), str(int), str(float))
 # '<built-in function print>' "<class 'int'>" "<class 'float'>"
+
